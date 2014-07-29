@@ -5,11 +5,18 @@ def mustach_dict(d):
         try:
             elem = rest.pop(0)
         except:
-            return end_value
+            if current is None:
+                return end_value
+            else:
+                raise Exception("Rewriting a key")
+
+        print elem, current
 
         if current is None:
             return {elem: rec(rest, end_value, None)}
-        elif type(current) is dict and current.has_key(elem):
+        elif type(current) is not dict:
+            raise Exception("Rewriting of the key {elem}".format(elem=elem))
+        elif current.has_key(elem):
             return rec(rest, end_value, current[elem])
         else:
             current[elem] = rec(rest, end_value, None)
@@ -19,7 +26,3 @@ def mustach_dict(d):
         rec(exploded_key, v, res)
 
     return res
-
-if __name__ == "__main__":
-    a = {'a.a':1, 'a.b': 2, 'a.c':3, 'd.e':4, 'd.f.q': 5, 'd.f.r':6}
-    print mustach_dict(a)
