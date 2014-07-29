@@ -1,0 +1,16 @@
+name: app
+description: camp2docker test applciation
+camp_version: CAMP 1.1
+artifacts:
+    -
+        name: Server file
+        artifact_type: Nodejs:Application
+        content: { href: app.js}
+        requirements:
+            -
+                requirement_type: Nodejs:Run
+                fulfillment:
+                    id: Nodejs.runtime
+                    characteristics:
+                        -
+                            characteristic_type: Nodejs

@@ -1,0 +1,50 @@
+-
+  name: Nodejs:Application
+  default_requirement: Nodejs:Run
+  requirements:
+    -
+      requirement_type: Nodejs:Run
+      parameters: { Nodejs.Port: integer }
+      default_service: nodejs
+      actions:
+        -
+          service: nodejs
+          instructions:
+            - target: .
+              do:
+                - ["ADD", "{{artifact}} /src/app/"]
+                - ["WORKDIR","/src/app"]
+                - ["RUN", "npm install"]
+                - ["CMD", "node {{artifact}}"]
+                - ["ENV", "{{#Nodejs.Port}}PORT {{.}}{{/Nodejs.Port}}"]
+                - ["EXPOSE", "{{Nodejs.Port}}", true]
+    - 
+      requirement_type: ConnectTo
+      parameters: { dbname: string, smallfiles: boolean}
+      default_service: mongodb
+      actions:
+        -
+          service: mongodb
+          instructions:
+            - target: .
+              do:
+                - ["CMD", "{{#smallfiles}}mongod --smallfiles{{/smallfiles}}"]
+            - target: {service: 'nodejs'}
+              do:
+                - ["LINK", {self: true}]
+                - ["ENV", "{{#dbname}}DBNAME {{.}}{{/dbname}}"]
+-
+  name: MongoDB:Dump
+  default_requirement: MongoDB:ImportDump
+  requirements:
+    -
+      requirement_type: MongoDB:ImportDump
+      default_service: mongodb
+      actions:
+        -
+          service: mongodb
+          instructions:
+            - target: .
+              do:
+                - ["ADD", "{{artifact}} /opt/"]
+                - ["RUN", "mongorestore --dbpath /data/db /opt/{{artifact}}"]

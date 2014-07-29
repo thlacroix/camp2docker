@@ -1,0 +1,33 @@
+name: VitaMinder
+description: Vitamin and Supplement Tracking
+camp_version: CAMP 1.1
+origin: http://www.oracle.com/nCAMP/Hand
+artifacts:
+  -
+    name: VitaMinder WAR
+    artifact_type: com.oracle.nCAMP:WAR
+    content: { href: VitaMinder.war }
+    requirements:
+      -
+        requirement_type: com.oracle.nCAMP:ConnectTo
+        com.oracle.nCAMP.dbName: VitaMinder
+        fulfillment:
+          id: db
+          characteristics:
+            -
+              characteristic_type: com.oracle.nCAMP:SQL
+      -
+        requirement_type: com.oracle.nCAMP:HostOn
+        fulfillment:
+          characteristics:
+            -
+              characteristic_type: com.oracle.nCamp:ServletContainer
+  -
+    name: Supplement SQL
+    artifact_type: com.oracle.nCAMP:SQL_script
+    content: { href: vitaminder.sql }
+    requirements:
+      -
+        requirement_type: com.oracle.nCAMP:LoadInto
+        fulfillment: id:db
+ 

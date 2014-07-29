@@ -1,0 +1,2 @@
+# Artifacts configuration
+TODO
