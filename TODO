@@ -1,6 +1,8 @@
 Link with charascteristics
 Do not build an image if not needed and use fig instead
 Fleet file generation
+Add comments
+Improve REAMDEs
 Improve VOLUME and EXPOSE
 Using external configuration files (like confd)
 Write more services
@@ -8,5 +10,4 @@ Allowing requirements and parameters for multiple artifacts and requirements
 Service versioning
 Default parameter, optional parameter
 Content URL and href improvements
-README
 Service frameworks
