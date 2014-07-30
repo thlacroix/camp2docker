@@ -20,5 +20,3 @@
       Nodejs:version: latest
     -
       characteristic_type: npm
-    -
-      characteristic_type: Javascript
