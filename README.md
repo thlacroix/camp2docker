@@ -13,6 +13,9 @@ Use [virtualenv](http://virtualenv.readthedocs.org/en/latest/) to created an iso
 Install dependencies with [pip](http://pip.readthedocs.org/en/latest/):
 `pip install requirements.txt`
 
+## Docker
+You can build directly the Docker image from this repository with `docker build git@github.com:thlacroix/camp2docker.git`
+
 ## Configuration
 The configuration files are in the [config](config) directory.
 
