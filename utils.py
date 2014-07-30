@@ -10,8 +10,6 @@ def mustach_dict(d):
             else:
                 raise Exception("Rewriting a key")
 
-        print elem, current
-
         if current is None:
             return {elem: rec(rest, end_value, None)}
         elif type(current) is not dict:
