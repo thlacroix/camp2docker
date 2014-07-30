@@ -9,7 +9,7 @@ class LinkException(Exception):
 class PlanProcessor(object):
     def __init__(self, plan):
         self.plan = plan
-        self.config = Config()
+        self.config = Config.from_path()
         self.assembly = Assembly(plan)
         self._temp_artifact_components = set()
         self._temp_actions = []

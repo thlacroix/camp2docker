@@ -30,9 +30,6 @@ class ServiceConfig(BaseConfig):
                 return False
         return True
 
-    def add_id(self, id):
-        self.id = id
-
 class CharacteristicConfig(BaseConfig):
     def __init__(self, characteristic_type, **kwargs):
         self.characteristic_type = characteristic_type
@@ -117,38 +114,45 @@ class InstructionList(BaseConfig):
         self.do = do
 
 class Config(object):
-    def __init__(self, path='config'):
+    def __init__(self, path, services, artifacts):
         self.path = path
-        self.services = [ServiceConfig(**service) for service in self._parse_services_directory()]
-        self.artifacts = [ArtifactConfig(**artifact) for artifact in self._parse_artifacts_directory()]
+        self.services = services
+        self.artifacts = artifacts
 
-    def _parse_services_directory(self):
-        services_path = os.path.join(self.path, 'services')
-        files = os.listdir(services_path)
-        services = []
-        for file in files:
-            if file.endswith('.yaml') or file.endswith('.yml'):
-                services.extend(self._parse_services_file(os.path.join(services_path, file)))
-        return services
+    @classmethod
+    def from_path(cls, path='config'):
+        def _parse_services_directory():
+            services_path = os.path.join(path, 'services')
+            files = os.listdir(services_path)
+            services = []
+            for file in files:
+                if file.endswith('.yaml') or file.endswith('.yml'):
+                    services.extend(_parse_services_file(os.path.join(services_path, file)))
+            return services
 
-    def _parse_services_file(self, filename):
-        with open(filename, "r") as f:
-            services = yaml.load(f)
-        return services
+        def _parse_services_file(filename):
+            with open(filename, "r") as f:
+                services = yaml.load(f)
+            return services
 
-    def _parse_artifacts_directory(self):
-        artifacts_path = os.path.join(self.path, 'artifacts')
-        files = os.listdir(artifacts_path)
-        artifacts = []
-        for file in files:
-            if file.endswith('.yaml') or file.endswith('.yml'):
-                artifacts.extend(self._parse_artifacts_file(os.path.join(artifacts_path, file)))
-        return artifacts
+        def _parse_artifacts_directory():
+            artifacts_path = os.path.join(path, 'artifacts')
+            files = os.listdir(artifacts_path)
+            artifacts = []
+            for file in files:
+                if file.endswith('.yaml') or file.endswith('.yml'):
+                    artifacts.extend(_parse_artifacts_file(os.path.join(artifacts_path, file)))
+            return artifacts
 
-    def _parse_artifacts_file(self, filename):
-        with open(filename, "r") as f:
-            artifacts = yaml.load(f)
-        return artifacts
+        def _parse_artifacts_file(filename):
+            with open(filename, "r") as f:
+                artifacts = yaml.load(f)
+            return artifacts
+
+        services = [ServiceConfig(**service) for service in _parse_services_directory()]
+        artifacts = [ArtifactConfig(**artifact) for artifact in _parse_artifacts_directory()]
+
+        return cls(path, services, artifacts)
 
     def find_artifact_config_by_type(self, artifact_type):
         try:

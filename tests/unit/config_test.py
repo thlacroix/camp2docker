@@ -2,10 +2,14 @@ import unittest
 from config import Config, NoServiceException, NoArtifactException
 from plan import CharacteristicSpecification
 
+def setUpModule():
+    global config
+    config = Config.from_path('tests/fixtures/config')
+
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.config = Config(path='tests/fixtures/config')
+        cls.config = config
     
     def test_number_services(self):
         self.assertEqual(len(self.config.services), 2)
