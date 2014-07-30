@@ -61,3 +61,26 @@ class ConfigTest(unittest.TestCase):
         characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': "2.6"})]
         with self.assertRaises(NoServiceException):
             self.config.find_service_by_characteristics(characteristics)
+
+class ServiceConfigTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.service = ServiceConfig(**services[0])
+
+    def test_fields(self):
+        self.assertEqual(self.service.name, 'mongodb')
+        self.assertEqual(self.service.base, 'dockerfile/mongodb')
+        self.assertEqual(self.service.description, 'MongoDB NoSQL Database')
+        self.assertEqual(len(self.service.characteristics), 3)
+
+    def test_corresponds_to_characteristics(self):
+        characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'latest'}), CharacteristicSpecification(**{'characteristic_type': 'Database'})]
+        self.assertTrue(self.service.corresponds_to_characteristics(characteristics))
+
+    def test_not_corresponds_to_characteristics_opt(self):
+        characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'first'}), CharacteristicSpecification(**{'characteristic_type': 'Database'})]
+        self.assertFalse(self.service.corresponds_to_characteristics(characteristics))
+
+    def test_not_corresponds_to_characteristics_char(self):
+        characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'latest'}), CharacteristicSpecification(**{'characteristic_type': 'SQL'})]
+        self.assertFalse(self.service.corresponds_to_characteristics(characteristics))
