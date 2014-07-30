@@ -21,6 +21,7 @@ The configuration files are in the [config](config) directory.
 Run the CLI with:
 
 `python camp2docker.py process <planfile>` to show the result in the terminal
+
 `python camp2docker.py generate <planfile> <output_folder>` to generate the files in `<output_folder>`
 
 ## Test
