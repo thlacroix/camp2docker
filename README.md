@@ -25,7 +25,7 @@ Run the CLI with:
 `python camp2docker.py generate <planfile> <output_folder>` to generate the files in `<output_folder>`
 
 ## Test
-Use `nodetest tests/unit` on the root directory to run all the tests
+Use `nosetest tests/unit` on the root directory to run all the tests
 
 ## License
 [MIT](LICENSE)
