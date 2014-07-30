@@ -25,3 +25,6 @@ Run the CLI with:
 
 ## Test
 Use `nodetest tests/unit` on the root directory to run all the tests
+
+## License
+[MIT](LICENSE)
