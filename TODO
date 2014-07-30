@@ -3,6 +3,7 @@ Do not build an image if not needed and use fig instead
 Fleet file generation
 Add comments
 Improve REAMDEs
+Add doc and comments
 Improve VOLUME and EXPOSE
 Using external configuration files (like confd)
 Write more services
