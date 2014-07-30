@@ -1,0 +1,26 @@
+-
+  name: mongodb
+  description: MongoDB NoSQL Database
+  type: database
+  base: dockerfile/mongodb
+  characteristics:
+    -
+      characteristic_type: NoSQL
+    -
+      characteristic_type: MongoDB
+      MongoDB:version: latest
+    -
+      characteristic_type: Database
+-
+  name: nodejs
+  description: nodejs runtime
+  base: node
+  type: runtime
+  characteristics:
+    -
+      characteristic_type: Nodejs
+      Nodejs:version: latest
+    -
+      characteristic_type: npm
+    -
+      characteristic_type: Javascript
