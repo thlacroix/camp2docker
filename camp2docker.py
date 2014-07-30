@@ -39,23 +39,23 @@ if __name__ == "__main__":
         pp.process_plan().generate_files(args["<output_folder>"])
 
     elif args["services"]:
-        config = Config()
+        config = Config.from_path()
         services = config.services
         for service in services:
             print service.name
     elif args["service"]:
-        config = Config()
+        config = Config.from_path()
         try:
             pprint.pprint(config.find_service_by_name(args["<service>"]))
         except:
             print "No service {service}".format(service=args["<service>"])
     elif args["artifacts"]:
-        config = Config()
+        config = Config.from_path()
         artifacts = config.artifacts
         for artifact in artifacts:
             print artifact.name
     elif args["artifact"]:
-        config=Config()
+        config=Config.from_path()
         try:
             pprint.pprint(config.find_artifact_config_by_type(args["<artifact>"]))
         except:
