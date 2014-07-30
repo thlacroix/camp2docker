@@ -1,7 +1,7 @@
 import unittest
 import yaml
 import os
-from config import Config, ServiceConfig, NoServiceException, NoArtifactException
+from config import Config, ServiceConfig, ArtifactConfig, NoServiceException, NoArtifactException, NoRequirementException
 from plan import CharacteristicSpecification
 
 def setUpModule():
@@ -84,3 +84,32 @@ class ServiceConfigTest(unittest.TestCase):
     def test_not_corresponds_to_characteristics_char(self):
         characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'latest'}), CharacteristicSpecification(**{'characteristic_type': 'SQL'})]
         self.assertFalse(self.service.corresponds_to_characteristics(characteristics))
+
+class ArtifactConfigTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.artifact = ArtifactConfig(**artifacts[0])
+
+    def test_fields(self):
+        self.assertEqual(self.artifact.name, 'Nodejs:Application')
+        self.assertEqual(self.artifact.default_requirement, 'Nodejs:Run')
+        self.assertEqual(len(self.artifact.requirements),2)
+
+    def test_get_default_requirement(self):
+        actual = self.artifact.get_default_requirement()
+        expected = self.artifact.requirements[0]
+        self.assertEqual(actual, expected)
+
+    def test_default_requirement_dont_exist(self):
+        artifact = ArtifactConfig(**artifacts[1])
+        with self.assertRaises(NoRequirementException):
+            artifact.get_default_requirement()
+
+    def test_find_existing_requirement_by_type(self):
+        actual = self.artifact.find_requirement_by_type('ConnectTo')
+        expected = self.artifact.requirements[1]
+        self.assertEqual(actual, expected)
+
+    def test_find_non_existing_requirement_by_type(self):
+        with self.assertRaises(NoRequirementException):
+            self.artifact.find_requirement_by_type('RunForest')

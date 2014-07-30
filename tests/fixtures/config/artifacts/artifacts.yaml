@@ -35,7 +35,7 @@
                 - ["ENV", "{{#dbname}}DBNAME {{.}}{{/dbname}}"]
 -
   name: MongoDB:Dump
-  default_requirement: MongoDB:ImportDump
+  default_requirement: MongoDB:ImportPump
   requirements:
     -
       requirement_type: MongoDB:ImportDump
