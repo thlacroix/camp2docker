@@ -10,6 +10,9 @@ class NoServiceException(Exception):
 class NoArtifactException(Exception):
     pass
 
+class NoRequirementException(Exception):
+    pass
+
 class ParameterException(Exception):
     pass
 
@@ -56,9 +59,15 @@ class ArtifactConfig(BaseConfig):
         self.default_requirement = default_requirement
         self.requirements = [RequirementConfig(**requirement) for requirement in requirements]
     def get_default_requirement(self):
-        return next(r for r in self.requirements if r.requirement_type == self.default_requirement)
+        try:
+            return next(r for r in self.requirements if r.requirement_type == self.default_requirement)
+        except StopIteration:
+            raise NoRequirementException("Can't find the default requirement {requirement}".format(requirement=self.default_requirement))
     def find_requirement_by_type(self, requirement_type):
-        return next(r for r in self.requirements if r.requirement_type == requirement_type)
+        try:
+            return next(r for r in self.requirements if r.requirement_type == requirement_type)
+        except StopIteration:
+            raise NoRequirementException("Can't find requirement {requirement}".format(requirement=requirement_type))
 
 class RequirementConfig(BaseConfig):
     def __init__(self, requirement_type, default_service, actions, parameters=None):
