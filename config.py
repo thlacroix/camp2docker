@@ -7,6 +7,9 @@ class ConfigError(Exception):
 class NoServiceException(Exception):
     pass
 
+class NoArtifactException(Exception):
+    pass
+
 class ParameterException(Exception):
     pass
 
@@ -149,10 +152,16 @@ class Config(object):
         return artifacts
 
     def find_artifact_config_by_type(self, artifact_type):
-        return next(artifact for artifact in self.artifacts if artifact.name == artifact_type)
+        try:
+            return next(artifact for artifact in self.artifacts if artifact.name == artifact_type)
+        except StopIteration:
+            raise NoArtifactException("Artifact {name} not found".format(name=artifact_type))
 
     def find_service_by_name(self, name):
-        return next(service for service in self.services if service.name == name)
+        try:
+            return next(service for service in self.services if service.name == name)
+        except StopIteration:
+            raise NoServiceException("Service {name} not found".format(name=name))
 
     def find_service_by_characteristics(self, characteristics):
         for service in self.services:
