@@ -1,7 +1,6 @@
 -
   name: mongodb
   description: MongoDB NoSQL Database
-  type: database
   base: dockerfile/mongodb
   characteristics:
     -
@@ -15,7 +14,6 @@
   name: nodejs
   description: nodejs runtime
   base: node
-  type: runtime
   characteristics:
     -
       characteristic_type: Nodejs

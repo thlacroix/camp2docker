@@ -18,11 +18,10 @@ class BaseConfig(object):
         return str(self.__dict__)
 
 class ServiceConfig(BaseConfig):
-    def __init__(self, name, description, base, type, characteristics):
+    def __init__(self, name, description, base, characteristics):
         self.name = name
         self.description = description
         self.base = base
-        self.type = type
         self.characteristics = [CharacteristicConfig(**characteristic) for characteristic in characteristics]
 
     def corresponds_to_characteristics(self, characteristics):
