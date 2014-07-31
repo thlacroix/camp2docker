@@ -1,3 +1,5 @@
+from yaml import load
+import os
 from config import Config
 from output import Container
 
@@ -35,6 +37,14 @@ class Plan(GeneralNode):
             services = kwargs.pop('services')
             self.services = ServiceSpecificationSet.from_dict_array(services)
         super(Plan, self).__init__(**kwargs)
+
+    @classmethod
+    def from_file(cls, filename):
+        with open(filename, 'r') as f:
+            plan = load(f)
+            if not plan.has_key("name"):
+                plan["name"] = os.path.split(filename)[1].split('.')[0]
+            return cls(**plan)
 
     @property
     def artifacts_or_empty(self):

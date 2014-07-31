@@ -15,7 +15,7 @@ Options:
     -h --help Show this
 """
 from docopt import docopt
-from input import Planfile
+from plan import Plan
 from assembly import PlanProcessor
 from config import Config
 import pprint
@@ -24,17 +24,17 @@ if __name__ == "__main__":
     args = docopt(__doc__)
 
     if args["load"]:
-        planfile = Planfile(args["<filename>"])
-        pprint.pprint(planfile.config)
+        with open(args["<filename>"], 'r') as f:
+            pprint.pprint(load(f))
     elif args["parse"]:
-        plan = Planfile(args["<filename>"]).create_plan()
+        plan = Plan.from_file(args["<filename>"])
         print plan
     elif args["process"]:
-        plan = Planfile(args["<filename>"]).create_plan()
-        pp = PlanProcessor(plan)
-        print pp.process_plan()
+        plan = Plan.from_file(args["<filename>"])
+        assembly = PlanProcessor(plan).process_plan()
+        print assembly
     elif args["generate"]:
-        plan = Planfile(args["<filename>"]).create_plan()
+        plan = Plan.from_file(args["<filename>"])
         pp = PlanProcessor(plan)
         pp.process_plan().generate_files(args["<output_folder>"])
 
