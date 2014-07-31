@@ -138,3 +138,28 @@ class ArtifactConfigTest(unittest.TestCase):
     def test_find_non_existing_requirement_by_type(self):
         with self.assertRaises(NoRequirementException):
             self.artifact.find_requirement_by_type('RunForest')
+
+class RequirementConfigTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.requirement = RequirementConfig(**artifacts[0]["requirements"][1])
+
+    def test_fields(self):
+        self.assertEqual(self.requirement.requirement_type, 'ConnectTo')
+        self.assertEqual(self.requirement.default_service, 'mongodb')
+        self.assertEqual(len(self.requirement.actions), 1)
+        self.assertTrue(isinstance(self.requirement.parameters, ParameterConfig))
+
+    def test_validate_parameters(self):
+        try:
+            self.requirement.validate_parameters({'dbname': 'Woof', 'smallfiles': True})
+        except ParameterException:
+            self.fail("Parameters not valid")
+
+    def test_validate_non_valid_type_parameters(self):
+        with self.assertRaises(ParameterException):
+            self.requirement.validate_parameters({'dbname': True})
+
+    def test_validate_non_valid_key_parameter(self):
+        with self.assertRaises(ParameterException):
+            self.requirement.validate_parameters({'first_name': 'Thomas'})
