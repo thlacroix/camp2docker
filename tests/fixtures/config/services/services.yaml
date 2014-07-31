@@ -8,6 +8,7 @@
     -
       characteristic_type: MongoDB
       MongoDB:version: latest
+      MongoDB:SingleNode: true
     -
       characteristic_type: Database
 -

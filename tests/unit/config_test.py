@@ -1,7 +1,7 @@
 import unittest
 import yaml
 import os
-from config import Config, ServiceConfig, ArtifactConfig, NoServiceException, NoArtifactException, NoRequirementException
+from config import Config, ServiceConfig, CharacteristicConfig, ArtifactConfig, RequirementConfig, ParameterConfig, ActionConfig, NoServiceException, NoArtifactException, NoRequirementException, ParameterException
 from plan import CharacteristicSpecification
 
 def setUpModule():
@@ -84,6 +84,31 @@ class ServiceConfigTest(unittest.TestCase):
     def test_not_corresponds_to_characteristics_char(self):
         characteristics = [CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'latest'}), CharacteristicSpecification(**{'characteristic_type': 'SQL'})]
         self.assertFalse(self.service.corresponds_to_characteristics(characteristics))
+
+class CharacteristicConfigTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        characteristic_dict = services[0]["characteristics"][1]
+        cls.characteristic = CharacteristicConfig(**characteristic_dict)
+
+    def test_fields(self):
+        self.assertEqual(self.characteristic.characteristic_type, "MongoDB")
+        self.assertEqual(getattr(self.characteristic, 'MongoDB:version'), "latest")
+
+    def test_parameters(self):
+        self.assertEquals(self.characteristic.parameters, {"MongoDB:version": "latest", "MongoDB:SingleNode": True})
+
+    def test_empty_parameters(self):
+        characteristic = CharacteristicConfig(**{'characteristic_type': 'Dogecoin'})
+        self.assertEqual(characteristic.parameters, {})
+
+    def test_match_characteristic(self):
+        characteristic = CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': 'latest'})
+        self.assertTrue(self.characteristic.match_characteristic(characteristic))
+
+    def test_no_match_characteristic(self):
+        characteristic = CharacteristicSpecification(**{'characteristic_type': 'MongoDB', 'MongoDB:version': '2.6'})
+        self.assertFalse(self.characteristic.match_characteristic(characteristic))
 
 class ArtifactConfigTest(unittest.TestCase):
     @classmethod
