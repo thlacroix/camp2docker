@@ -1,5 +1,5 @@
 name: app
-description: camp2docker test applciation
+description: camp2docker test application
 camp_version: CAMP 1.1
 artifacts:
     -
@@ -10,11 +10,7 @@ artifacts:
             -
                 requirement_type: Nodejs:Run
                 Nodejs.Port: 3000
-                fulfillment:
-                    id: Nodejs.runtime
-                    characteristics:
-                        -
-                            characteristic_type: Nodejs
+                fulfillment: id:Nodejs.runtime
             -
                 requirement_type: ConnectTo
                 dbname: BGA
@@ -33,3 +29,9 @@ artifacts:
                         -
                             characteristic_type: MongoDB
                             MongoDB:version: latest
+services:
+    -
+        id: Nodejs.runtime
+        characteristics:
+            -
+                characteristic_type: Nodejs
