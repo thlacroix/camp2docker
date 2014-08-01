@@ -77,10 +77,6 @@ class ServiceSpecification(GeneralNode):
             self.characteristics = [CharacteristicSpecification(**c) for c in characteristics]
         super(ServiceSpecification, self).__init__(**kwargs)
 
-    @property
-    def has_id(self):
-        return hasattr(self,'id')
-
 class CharacteristicSpecification(Node):
     def __init__(self, characteristic_type, **kwargs):
         self.characteristic_type = characteristic_type
@@ -145,28 +141,11 @@ class ResourceSet(list):
     pass
 
 class ServiceSpecificationSet(ResourceSet):
-    """
-    def __init__(self, services):
-        super(ServiceSpecificationSet, self).__init__([ServiceSpecification(**s) for s in services])
-    def __setitem__(self, key, service):
-        super(ServiceSpecificationSet, self).__setitem__(key, ServiceSpecification(**service))
-    """
-    def find_service_by_id(self, id):
-        for service in iter(self):
-            if service.id == id:
-                return service
-
     @classmethod
     def from_dict_array(cls, services):
         return cls([ServiceSpecification(**service) for service in services])
 
 class ArtifactSpecificationSet(ResourceSet):
-    """
-    def __init__(self, artifacts):
-        super(ArtifactSpecificationSet, self).__init__([ArtifactSpecification(**a) for a in artifacts])
-    def __setitem__(self, key, artifact):
-        super(ArtifactSpecificationSet, self).__setitem__(key, ArtifactSpecification(**artifact))
-    """
     @classmethod
     def from_dict_array(cls, artifacts):
         return cls([ArtifactSpecification(**artifact) for artifact in artifacts])

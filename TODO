@@ -1,3 +1,4 @@
+Use service specification
 Link with charascteristics
 Do not build an image if not needed and use fig instead
 Fleet file generation
@@ -7,6 +8,7 @@ Add doc and comments
 Improve VOLUME and EXPOSE
 Using external configuration files (like confd)
 Write more services
+Services with href
 Allowing requirements and parameters for multiple artifacts and requirements
 Service versioning
 Default parameter, optional parameter
