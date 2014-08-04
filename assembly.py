@@ -119,9 +119,9 @@ class Assembly(object):
                 rep += "\tlinks:\n"
                 for link in container.links:
                     rep += "\t\t- {container_name}\n".format(container_name=link.name)
-            if container._exposes:
+            if container.exposes:
                 rep += "\tports:\n"
-                for port in container._exposes:
+                for port in container.exposes:
                     rep+= "\t\t- \"{port}:{port}\"\n".format(port=port)
 
         return rep
