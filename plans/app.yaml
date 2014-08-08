@@ -23,15 +23,18 @@ artifacts:
         requirements:
             -
                 requirement_type: MongoDB:ImportDump
-                fulfillment:
-                    id: mongo
-                    characteristics:
-                        -
-                            characteristic_type: MongoDB
-                            MongoDB:version: latest
+                MongoDB.Dump.dbname: BGA
+                fulfillment: id:mongo
 services:
     -
         id: Nodejs.runtime
         characteristics:
             -
                 characteristic_type: Nodejs
+    -
+        id: mongo
+        characteristics:
+            -
+                characteristic_type: MongoDB
+                MongoDB:version: latest
+        

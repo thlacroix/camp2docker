@@ -14,7 +14,7 @@
               do:
                 - ["ADD", "{{artifact}} /src/app/"]
                 - ["WORKDIR","/src/app"]
-                - ["RUN", "npm install"]
+                - ["RUN", "npm install || true"]
                 - ["CMD", "node {{artifact}}"]
                 - ["ENV", "{{#Nodejs.Port}}PORT {{.}}{{/Nodejs.Port}}"]
                 - ["EXPOSE", "{{Nodejs.Port}}", true]
@@ -39,6 +39,7 @@
   requirements:
     -
       requirement_type: MongoDB:ImportDump
+      parameters: {MongoDB.Dump.dbname: string}
       default_service: mongodb
       actions:
         -
@@ -47,4 +48,4 @@
             - target: .
               do:
                 - ["ADD", "{{artifact}} /opt/"]
-                - ["RUN", "mongorestore --dbpath /data/db /opt/{{artifact}}"]
+                - ["RUN", "mongorestore --dbpath /data/db /opt/{{artifact}} {{#MongoDB.Dump.dbname}}-d {{.}}{{/MongoDB.Dump.dbname}}"]
