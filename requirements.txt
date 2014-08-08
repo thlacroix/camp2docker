@@ -2,3 +2,4 @@ docopt
 pystache
 PyYAML
 nose
+mock
