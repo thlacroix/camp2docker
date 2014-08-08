@@ -1,15 +1,19 @@
 from output import Container
 from config import Config
+from plan import Plan
+from fig.project import Project
 import os
 import utils
+import shutil
+import errno
 
 class LinkException(Exception):
     pass
 
 class PlanProcessor(object):
-    def __init__(self, plan):
+    def __init__(self, plan, config='config'):
         self.plan = plan
-        self.config = Config.from_path()
+        self.config = Config.from_path(config)
         self.assembly = Assembly(plan)
         self._temp_artifact_components = set()
         self._temp_actions = []
@@ -31,7 +35,8 @@ class PlanProcessor(object):
                         service = self.config.find_service_by_characteristics(service_specification.characteristics)
                     else:
                         service = self.config.find_service_by_name(requirement_config.default_service)
-                    component = self.assembly.add_component(service_specification, service, artifact=artifact.content)
+                    component = self.assembly.add_component(service_specification, service)
+                    component.artifacts.add(artifact.content)
                     self._temp_artifact_components.add(component)
                     action = requirement_config.find_action_by_service_name(service.name)
                     parameters = utils.mustach_dict(requirement.parameters)
@@ -40,7 +45,8 @@ class PlanProcessor(object):
             else:
                 requirement_config = artifact_config.get_default_requirement()
                 service = self.config.find_service_by_name(requirement_config.default_service)
-                component = self.assembly.add_component(None, service, artifact=artifact.content)
+                component = self.assembly.add_component(None, service)
+                component.artifacts.add(artifact.content)
                 self._temp_artifact_components.add(component)
                 action = requirement_config.find_action_by_service_name(service.name)
                 parameters = {'artifact': str(artifact.content)}
@@ -55,7 +61,7 @@ class PlanProcessor(object):
                 if c.service_config.name == specification["service"]:
                     return c
             else:
-                raise LinkException("Can't link to service {service}".format(service=specification["service"]))
+                raise LinkException("Can't find service {service}".format(service=specification["service"]))
 
     
     def _resolve_links(self):
@@ -79,16 +85,47 @@ class PlanProcessor(object):
         self._resolve_links()
 
 class Component(object):
-    def __init__(self, service_specification, service_config, container=None, artifact=None):
+    def __init__(self, service_specification, service_config, container=None, artifacts=None):
         self.service_specification = service_specification
         self.service_config = service_config
         if container is not None:
             self.container = container
         else:
             self.container = Container.from_service(service_config)
-        if artifact is not None:
-            self.artifact = artifact
+        if artifacts is not None:
+            self.artifacts = artifacts
+        else:
+            self.artifacts = set()
         self.related_components = set()
+
+    @property
+    def service_dict(self):
+        service = {'name': self.container.name }
+        if self.container.needs_build:
+            service['build'] = self.container.name
+        else:
+            service['image'] = self.container.base
+            if self.container.volumes:
+                volumes = []
+                service['volumes'] = volumes
+                for volume in self.container.volumes:
+                    volumes.append(volume)
+            if self.container.cmd is not None:
+                service['command'] = self.container.cmd
+            if self.container.entrypoint is not None:
+                service['entrypoint'] = self.container.entrypoint
+        if self.container.links:
+            links = []
+            service['links'] = links
+            for link in self.container.links:
+                links.append(link.name)
+        if self.container.exposes:
+            exposes = []
+            service['ports'] = exposes
+            for port in self.container.exposes:
+                exposes.append('{port}:{port}'.format(port=port))
+        return service
+
 
 class Assembly(object):
     """
@@ -97,6 +134,12 @@ class Assembly(object):
     def __init__(self, plan):
         self.plan = plan
         self.components = set()
+
+    @classmethod
+    def from_plan(cls, planfile, config='config'):
+        plan = Plan.from_file(planfile)
+        pp = PlanProcessor(plan, config)
+        return pp.process_plan()
 
     def add_component(self, service_specification, service_config, container=None, artifact=None):
         component = None if service_specification is None else self.search_component(service_specification)
@@ -110,23 +153,49 @@ class Assembly(object):
             if component.service_specification is service_specification:
                 return component
     def to_fig(self):
+        log = logging.getLogger()
+        log_service = logging.getLogger('service')
         rep = ""
         for c in self.components:
             container = c.container
             rep += container.name + ":\n"
-            rep += "\tbuild: {foldername}\n".format(foldername=container.name)
+            if container.needs_build:
+                rep += "  build: {foldername}\n".format(foldername=container.name)
+            else:
+                rep+= "  image: {image}\n".format(image=container.base)
             if container.links:
-                rep += "\tlinks:\n"
+                rep += "  links:\n"
                 for link in container.links:
-                    rep += "\t\t- {container_name}\n".format(container_name=link.name)
+                    rep += "    - {container_name}\n".format(container_name=link.name)
             if container.exposes:
-                rep += "\tports:\n"
+                rep += "  ports:\n"
                 for port in container.exposes:
-                    rep+= "\t\t- \"{port}:{port}\"\n".format(port=port)
-
+                    rep+= "    - \"{port}:{port}\"\n".format(port=port)
         return rep
+    
+    @property
+    def to_service_dicts(self):
+        service_dicts = []
+        for c in self.components:
+            service_dicts.append(c.service_dict)
+        return service_dicts
 
-    def generate_files(self, output_directory):
+    def to_fig_project(self, client):
+        return Project.from_dicts(self.plan.name, self.to_service_dicts, client)
+    
+    def run(self, client):
+        self.to_fig_project(client).up()
+
+    def stop(self, client):
+        self.to_fig_project(client).stop()
+
+    def start(self, client):
+        self.to_fig_project(client).start()
+
+    def rm(self, client):
+        self.to_fig_project(client).remove_stopped()
+
+    def generate_files(self, plan_directory, output_directory):
         dir = os.path.join(output_directory, self.plan.name)
         try:
             os.mkdir(dir)
@@ -145,6 +214,15 @@ class Assembly(object):
                     raise
             with open(os.path.join(dirname, 'Dockerfile'), 'w') as Dockerfile:
                 Dockerfile.write(str(c.container))
+            for artifact in c.artifacts:
+                try :
+                    target = os.path.join(dirname, artifact.href)
+                    if not os.path.exists(target):
+                        shutil.copytree(os.path.join(plan_directory, artifact.href), target)
+                except OSError as e:
+                    if e.errno == errno.ENOTDIR:
+                        shutil.copy(os.path.join(plan_directory, artifact.href), dirname)
+                    else: raise
 
     def __repr__(self):
         res = "========== DOCKERFILES ==========\n\n" 
