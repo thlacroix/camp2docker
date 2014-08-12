@@ -1,6 +1,6 @@
 import unittest
 from yaml import load
-from plan import Plan, ServiceSpecification, ArtifactSpecification, RequirementSpecification, CharacteristicSpecification, ArtifactSpecificationSet, ServiceSpecificationSet
+from camp2docker.plan import Plan, ServiceSpecification, ArtifactSpecification, RequirementSpecification, CharacteristicSpecification, ArtifactSpecificationSet, ServiceSpecificationSet
 
 def setUpModule():
     global plan

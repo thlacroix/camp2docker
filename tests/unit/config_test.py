@@ -1,8 +1,8 @@
 import unittest
 import yaml
 import os
-from config import Config, ServiceConfig, CharacteristicConfig, ArtifactConfig, RequirementConfig, ParameterConfig, ActionConfig, NoServiceException, NoArtifactException, NoRequirementException, ParameterException
-from plan import CharacteristicSpecification
+from camp2docker.config import Config, ServiceConfig, CharacteristicConfig, ArtifactConfig, RequirementConfig, ParameterConfig, ActionConfig, NoServiceException, NoArtifactException, NoRequirementException, ParameterException
+from camp2docker.plan import CharacteristicSpecification
 
 def setUpModule():
     global artifacts

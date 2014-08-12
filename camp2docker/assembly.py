@@ -93,7 +93,7 @@ class Component(object):
         else:
             self.container = Container.from_service(service_config)
         if artifacts is not None:
-            self.artifacts = artifacts
+            self.artifacts = set(artifacts)
         else:
             self.artifacts = set()
         self.related_components = set()
@@ -153,8 +153,6 @@ class Assembly(object):
             if component.service_specification is service_specification:
                 return component
     def to_fig(self):
-        log = logging.getLogger()
-        log_service = logging.getLogger('service')
         rep = ""
         for c in self.components:
             container = c.container

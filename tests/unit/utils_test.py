@@ -1,6 +1,6 @@
 import unittest
 
-from utils import mustach_dict
+from camp2docker.utils import mustach_dict
 
 class TestMustachDict(unittest.TestCase):
     def test_empty(self):

@@ -1,6 +1,6 @@
 import unittest
 from mock import Mock
-from output import Container
+from camp2docker.output import Container
 
 class ContainerTest(unittest.TestCase):
     @classmethod

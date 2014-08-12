@@ -3,3 +3,4 @@ pystache
 PyYAML
 nose
 mock
+fig
