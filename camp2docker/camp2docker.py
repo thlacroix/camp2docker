@@ -57,7 +57,8 @@ if __name__ == "__main__":
     elif args["generun"]:
         assembly = Assembly.from_plan(args["<filename>"])
         assembly.generate_files(os.path.split(args["<filename>"])[0], args["<output_folder>"])
-        os.chdir(os.path.join(args["<output_folder>"], plan.name))
+        os.chdir(os.path.join(args["<output_folder>"], assembly.plan.name))
+        client = Client(docker_url())
         assembly.run(client)
     elif args["start"]:
         assembly = Assembly.from_plan(args["<filename>"])
